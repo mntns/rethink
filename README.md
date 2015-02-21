@@ -16,7 +16,7 @@ end
 ```
 
 ```iex
-iex> {:ok, pid} = Postgrex.Connection.start_link(hostname: "localhost", port: 28015, database: "test")
+iex> {:ok, pid} = Rethink.Connection.start_link(hostname: "localhost", port: 28015, database: "test")
 {:ok, #PID<0.42.0>}
 ```
 
