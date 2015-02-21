@@ -15,6 +15,7 @@ defmodule Rethink.Mixfile do
 
   defp deps do
     [{:exjsx,  github: "talentdeficit/exjsx"},
-     {:socket, github: "meh/elixir-socket"}]
+     {:socket, github: "meh/elixir-socket"},
+     {:inch_ex, only: :docs}]
   end
 end
