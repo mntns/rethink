@@ -1,4 +1,7 @@
 defmodule Rethink.Connection do
+  @moduledoc """
+  This is the important module.
+  """
   use GenServer
 
   @timeout :infinity
@@ -10,6 +13,7 @@ defmodule Rethink.Connection do
   # :auth_key
   # :timeout
 
+  @doc "Starts the link."
   def start_link(opts) do
     opts = Enum.reject(opts, fn {_k, v} -> is_nil(v) end)
     case GenServer.start_link(__MODULE__, []) do
