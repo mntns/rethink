@@ -1,12 +1,12 @@
 defmodule Rethink.R do
   @moduledoc false
-  
+
   def make_array(a), do: [2, a]
   # TODO: do some research regarding make_object
 
   # * Compound types
   def var(number), do: [10, [number]]
-  
+
   def javascript(string), do: [11, [string]]
 
   def uuid, do: [169]
@@ -59,8 +59,8 @@ defmodule Rethink.R do
   # * Write Ops
   #def update(selection, function, opts) when is_function(function), do: [53, [selection, ]]
   #def update(selection, object, opts \\ nil), do:
-  #def delete(selection, opts),     do
-    #def replace(selection)
+  #def delete(selection, opts)
+  ##def replace(selection)
 
   def insert(table, object),       do: [56, [table, object]]
   def insert(table, object, opts), do: [56, [table, object], opts]
@@ -69,7 +69,7 @@ defmodule Rethink.R do
   def db_create(string), do: [57, [string]]
   def db_drop(string),   do: [58, [string]]
   def db_list,           do: [59]
-  
+
   def table_create(string), do: [60, [string]]
   def table_drop(string),   do: [61, [string]]
   def table_list,           do: [62]
@@ -122,14 +122,14 @@ defmodule Rethink.R do
   def in_timezone(time, string),   do: [104, [time, string]]
   def during(time1, time2, time3), do: [105, [time1, time2, time3]]
   def date(time),                  do: [106, time]
-  
+
   def time_of_day(time),           do: [126, time]
   def timezone(time),              do: [127, time]
 
 
   time_accessors = [[:year, 128], [:month, 129], [:day, 130],
-                    [:day_of_week, 131], [:day_of_year, 132], [:hours, 133],
-                    [:minutes, 134], [:seconds, 135]]
+    [:day_of_week, 131], [:day_of_year, 132], [:hours, 133],
+    [:minutes, 134], [:seconds, 135]]
 
   for [name, code] <- time_accessors do
     def unquote(name)(time), do: [unquote(code), time]
@@ -144,13 +144,13 @@ defmodule Rethink.R do
   end
 
   constants = [[:monday, 107], [:tuesday, 108], [:wednesday, 109],
-               [:thursday, 110], [:friday, 111], [:saturday, 112],
-               [:sunday, 113], [:january, 114], [:february, 115],
-               [:march, 116], [:april, 117], [:may, 118],
-               [:june, 119], [:july, 120], [:august, 121],
-               [:september, 122], [:october, 123], [:november, 124],
-               [:december, 125]]
-  
+    [:thursday, 110], [:friday, 111], [:saturday, 112],
+    [:sunday, 113], [:january, 114], [:february, 115],
+    [:march, 116], [:april, 117], [:may, 118],
+    [:june, 119], [:july, 120], [:august, 121],
+    [:september, 122], [:october, 123], [:november, 124],
+    [:december, 125]]
+
   for [name, code] <- constants do
     def unquote(name)(), do: unquote(code)
   end
@@ -159,7 +159,7 @@ defmodule Rethink.R do
 
   # Aggregations
   aggregations = [[:group, 144], [:sum, 145], [:avg, 146],
-                  [:min, 147], [:max, 148]]
+    [:min, 147], [:max, 148]]
 
   for [name, code] <- aggregations do
     def unquote(name)(sequence, string), do: [unquote(code), [make_array(sequence), string]]
@@ -178,12 +178,12 @@ defmodule Rethink.R do
   def geojson(object),                   do: [157, object]
   def to_geojson(geometry),              do: [158, geometry] 
   def point(n1, n2),                     do: [159, [n1, n2]]
-  def line(array),                       do: [160, make_arry(array)]]
-  def polygon(array),                    do: [161, make_array[array]]
+  def line(array),                       do: [160, make_array(array)]
+  def polygon(array),                    do: [161, make_array(array)]
   def distance(geometry1, geometry2),    do: [162, [geometry1, geometry2]]
   def intersects(geometry1, geometry2),  do: [163, [geometry1, geometry2]]
   def includes(geometry1, geometry2),    do: [164, [geometry1, geometry2]]
-  def circle(geometry, number),          do: [165, [geometry, number]
+  def circle(geometry, number),          do: [165, [geometry, number]]
   def get_intersecting(table, geometry), do: [166, [table, geometry]]
   def fill(geometry),                    do: [167, geometry] 
   def get_nearest(table, geometry),      do: [168, [table, geometry]]
