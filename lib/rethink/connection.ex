@@ -76,7 +76,7 @@ defmodule Rethink.Connection do
     socket = Socket.TCP.connect!(opts[:hostname], opts[:port])
     shake_hands!(socket, opts[:auth_key])
     GenServer.reply(from, :ok)
-    {:noreply, %{s | sock: socket}}
+    {:noreply, %{s | sock: socket, database: opts[:database]}}
   end
 
   def handle_call({:run, query}, _from, s) do
