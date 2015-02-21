@@ -1,0 +1,3 @@
+%{"exjsx": {:git, "git://github.com/talentdeficit/exjsx.git", "d3572b488f10e3b83fadb1fc595fc87f84c35809", []},
+  "jsx": {:hex, :jsx, "2.4.0"},
+  "socket": {:git, "git://github.com/meh/elixir-socket.git", "9bc351e1a442a727b1da03b072a4f4b48170a087", []}}
