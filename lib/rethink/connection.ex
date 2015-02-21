@@ -13,7 +13,16 @@ defmodule Rethink.Connection do
   # :auth_key
   # :timeout
 
-  @doc "Starts the link."
+  @doc """
+  Starts the link of the supervisor and connects to the database.
+
+  Some supported arguments are:
+  * :hostname
+  * :port
+  * :database
+  * :auth_key
+  * :timeout
+  """
   def start_link(opts) do
     opts = Enum.reject(opts, fn {_k, v} -> is_nil(v) end)
     case GenServer.start_link(__MODULE__, []) do
@@ -27,18 +36,22 @@ defmodule Rethink.Connection do
     end
   end
 
+  @doc "Stops the link."
   def stop(pid) do
     GenServer.call(pid, :stop)
   end
 
+  @doc "Checks if socket of the link is open."
   def is_open(pid) do
     GenServer.call(pid, :open)
   end
 
+  @doc "Runs a RQL query."
   def run(query, pid) do
     GenServer.call(pid, {:run, query})
   end
 
+  @doc "Tells the GenServer to use a specific RethinkDB database."
   def use(pid, database) do
     GenServer.call(pid, {:use, database})
   end
