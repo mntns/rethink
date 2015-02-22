@@ -52,6 +52,24 @@ defmodule Rethink.R do
   def indexes_of(sequence, datum)      , do: [87, [sequence, datum]]
   def contains(sequence, datum)        , do: [93, [sequence, datum]]
 
+
+  def get_field(object, string),     do: [31, [make_array(object), string]]
+  def keys(object),                  do: [94, object]
+  
+  def has_fields(object, pathspec),  do: [32, [object, pathspec]]
+  def with_fields(object, pathspec), do: [96, [object, pathspec]]
+  def pluck(object, pathspec),       do: [33, [object, pathspec]]
+  def without(object, pathspec),     do: [34, [object, pathspec]]
+  def merge(objects),                do: [35, make_array(objects)]
+  
+  # Sequence Ops
+  def between(selection, datum1, datum2), do: [36, [make_array(selection), datum1, datum2]]
+  def reduce(sequence, function),         do: [37, [make_array(sequence), func(function)]]
+  def map(sequence, function),            do: [38, [make_array(sequence), func(function)]]
+
+  def filter(sequence, function) when is_function(function), do: [39, [sequence, func(function)]] 
+  def filter(sequence, object),                              do: [39, [sequence, object]]
+  
   # * Type Ops
   def coerce_to(top, string), do: [51, [top, string]]
   def type_of(top),           do: [52, [top]]

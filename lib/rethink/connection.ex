@@ -4,6 +4,7 @@ defmodule Rethink.Connection do
   """
   use GenServer
 
+  @debug true
   @timeout :infinity
 
   # some supported opts:
@@ -89,6 +90,11 @@ defmodule Rethink.Connection do
     q_length = <<String.length(encoded_query) :: little-size(32)>>
     Socket.Stream.send!(s.sock, q_length)
     Socket.Stream.send!(s.sock, encoded_query)
+
+    # Debug info
+    if @debug do
+      IO.puts encoded_query
+    end
 
     # Receive token and length
     r_token = Socket.Stream.recv!(s.sock, 8)
