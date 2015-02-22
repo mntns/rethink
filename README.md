@@ -24,6 +24,11 @@ iex> {:ok, pid} = Rethink.Connection.start_link(hostname: "localhost", port: 280
 
 TODO
 
+## Resources
+
+* Official driver spec: http://rethinkdb.com/docs/driver-spec/
+* Official Ruby client driver doc: http://rethinkdb.com/api/ruby/
+* Official protocol specification: https://github.com/rethinkdb/rethinkdb/blob/v1.16.x/src/rdb_protocol/ql2.proto
 
 ## Donate
 
