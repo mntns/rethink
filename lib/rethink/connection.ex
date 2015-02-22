@@ -4,15 +4,17 @@ defmodule Rethink.Connection do
   """
   use GenServer
 
-  @debug true
+  @debug false
   @timeout :infinity
 
-  # some supported opts:
-  # :hostname
-  # :port
-  # :database
-  # :auth_key
-  # :timeout
+  @doc """
+  You can start the connection with this function without specifying any arguments.
+  Rethink will then connect to your local RethinkDB instance on the default port.
+  Don't forget to set a database with `Rethink.Connection.use` later.
+  """
+  def start_link() do
+    start_link(hostname: "localhost", port: 28015)
+  end
 
   @doc """
   Starts the link of the supervisor and connects to the database.
