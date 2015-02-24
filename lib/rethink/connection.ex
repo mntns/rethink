@@ -28,10 +28,10 @@ defmodule Rethink.Connection do
   """
   def start_link(opts) do
     opts = Enum.reject(opts, fn {_k, v} -> is_nil(v) end)
-    case GenServer.start_link(__MODULE__, []) do
+    case GenServer.start_link(__MODULE__, [], name: __MODULE__) do
       {:ok, pid} ->
         timeout = opts[:timeout] || @timeout
-        case apply(GenServer, :call, [pid, {:connect, opts}, timeout]) do
+        case apply(GenServer, :call, [__MODULE__, {:connect, opts}, timeout]) do
           :ok -> {:ok, pid}
           err -> {:error, err}
         end
@@ -40,23 +40,23 @@ defmodule Rethink.Connection do
   end
 
   @doc "Stops the link."
-  def stop(pid) do
-    GenServer.call(pid, :stop)
+  def stop do
+    GenServer.call(__MODULE__, :stop)
   end
 
   @doc "Checks if socket of the link is open."
-  def is_open(pid) do
-    GenServer.call(pid, :open)
+  def is_open do
+    GenServer.call(__MODULE__, :open)
   end
 
   @doc "Runs a RQL query."
-  def run(query, pid) do
-    GenServer.call(pid, {:run, query})
+  def run(query) do
+    GenServer.call(__MODULE__, {:run, query})
   end
 
   @doc "Tells the GenServer to use a specific RethinkDB database."
-  def use(pid, database) do
-    GenServer.call(pid, {:use, database})
+  def use(database) do
+    GenServer.call(__MODULE__, {:use, database})
   end
 
   # Callbacks
