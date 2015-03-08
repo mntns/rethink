@@ -102,7 +102,7 @@ defmodule Rethink.R do
 
   def range(),                 do: [173]
   def range(number),           do: [173, [number]]
-  def range(number1, number2), do: [173, [number1. number2]]
+  def range(number1, number2), do: [173, [number1, number2]]
 
   # Array Ops
   def insert_at(array, number, datum),    do: [82, [array, number, datum]]
@@ -148,14 +148,15 @@ defmodule Rethink.R do
 
   # * Secondary indexes OPs
   # TODO: check this {multi:BOOL} thingie
+  def index_create(table, string),       do: [75, [table, string]]
   def index_create(table, string, function) when is_function(function) do
     [75, [table, string, func(function)]]
   end
+  def index_create(table, string, opts), do: [75, [table, string], opts]
   def index_create(table, string, function, opts) when is_function(function) do
     [75, [table, string, func(function)], opts]
   end
-  def index_create(table, string),       do: [75, [table, string]]
-  def index_create(table, string, opts), do: [75, [table, string], opts]
+  
   def index_drop(table, string),         do: [76, [table, string]]
   def index_list(table),                 do: [77, [table]]
 
@@ -168,10 +169,11 @@ defmodule Rethink.R do
   
   def branch(bool, top1, top2), do: [65, [bool, top1, top2]]
   
-  def or(bools),         do: [66, [bools]]
-  def or(bool1, bool2),  do: [66, [bool1, bool2]]
-  def and(bools),        do: [67, [bools]]
-  def and(bool1, bool2), do: [67, [bool1, bool2]]
+  # TODO: wat.
+  #def any(bool),         do: [66, [make_array(bool)]] 
+  #def any(bool1, bool2), do: [66, [bool1, make_array bool2]]
+  #def all(bool),         do: [67, [make_array(bool)]]
+  #def all(bool1, bool2), do: [67, [bool1, make_array bool2]]
 
   def for_each(sequence, function), do: [68, [sequence, func(function)]]
 
