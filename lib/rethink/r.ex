@@ -7,27 +7,34 @@ defmodule Rethink.R do
   # * Compound types
   def var(number), do: [10, [number]]
 
-  def javascript(string), do: [11, [string]]
+  def javascript(string),       do: [11, [string]]
+  def javascript(string, opts), do: [11, [string], opts]
 
   def uuid, do: [169]
 
-  def http(string), do: [153, [string]]
+  def http(string)      , do: [153, [string]]
+  def http(string, opts), do: [153, [string], opts]
+
   def error(string), do: [12, [string]]
 
   def implicit_var, do: [13]
 
   # * Data Operators
   def db(string),    do: [14, [string]]
-  def table(string), do: [15, [string]]
 
-  def get(string),     do: [16, [string]]
-  def get_all(string), do: [17, [string]]
+  def table(string),       do: [15, [string]]
+  def table(string, opts), do: [15, [string], opts]
+
+  def get(table, string),           do: [16, [table, string]]
+
+  def get_all(table, datum),        do: [78, [table, datum]]
+  def get_all(table, datum, opts),  do: [78, [table, datum], opts]
 
   # Simple DATUM Ops
   ops = [[:eq, 17], [:ne, 18], [:lt, 19],
-         [:le, 20], [:gt, 21], [:ge, 22], 
-         [:not, 23], [:add, 24], [:sub, 25],
-         [:mul, 26], [:div, 27], [:mod, 28]]
+    [:le, 20], [:gt, 21], [:ge, 22], 
+    [:not, 23], [:add, 24], [:sub, 25],
+    [:mul, 26], [:div, 27], [:mod, 28]]
 
   # Thanks, l3kn!
   for [name, code] <- ops do
@@ -36,40 +43,71 @@ defmodule Rethink.R do
   end
 
   # DATUM Array Ops
-  def append(array, datum),     do: [29, make_array(array), datum]
-  def prepend(array, datum),    do: [80, make_array(array), datum]
-  def difference(array, array), do: [95, make_array(array), make_array(array)]
+  def append(array, datum),       do: [29, [array, datum]]
+  def prepend(array, datum),      do: [80, [array, datum]]
+  def difference(array1, array2), do: [95, [array1, make_array(array2)]]
 
   # DATUM Set Ops
-  def set_insert(array, datum),       do: [88, [make_array(array), datum]]
-  def set_intersection(array, datum), do: [89, [make_array(array), datum]]
-  def set_union(array, array),        do: [90, [make_array(array), make_array(array)]]
-  def set_difference(array, array),   do: [91, [make_array(array), make_array(array)]]
+  def set_insert(array, datum),       do: [88, [array, datum]]
 
-  def slice(s, number1, number2), do: [30, [s, number1, number2]]
-  def skip(s, number)           , do: [70, [s, number]]
-  def limit(s, number)          , do: [71, [s, number]]
+  def set_intersection(array1, array2), do: [89, [array1, make_array(array2)]]
+  def set_union(array1, array2),        do: [90, [array1, make_array(array2)]]
+  def set_difference(array1, array2),   do: [91, [array1, make_array(array2)]]
+
+  def slice(sequence, number1, number2), do: [30, [sequence, number1, number2]]
+  def skip(sequence, number),            do: [70, [sequence, number]]
+  def limit(sequence, number),           do: [71, [sequence, number]]
   def indexes_of(sequence, datum)      , do: [87, [sequence, datum]]
   def contains(sequence, datum)        , do: [93, [sequence, datum]]
 
-
+  # Stream/Object Ops
   def get_field(object, string),     do: [31, [make_array(object), string]]
   def keys(object),                  do: [94, object]
-  
+
   def has_fields(object, pathspec),  do: [32, [object, pathspec]]
   def with_fields(object, pathspec), do: [96, [object, pathspec]]
   def pluck(object, pathspec),       do: [33, [object, pathspec]]
   def without(object, pathspec),     do: [34, [object, pathspec]]
   def merge(objects),                do: [35, make_array(objects)]
-  
+
   # Sequence Ops
   def between(selection, datum1, datum2), do: [36, [make_array(selection), datum1, datum2]]
   def reduce(sequence, function),         do: [37, [make_array(sequence), func(function)]]
   def map(sequence, function),            do: [38, [make_array(sequence), func(function)]]
 
-  def filter(sequence, function) when is_function(function), do: [39, [sequence, func(function)]] 
+  def filter(sequence, function) when is_function(function), do: [39, [sequence, func(function)]]  
   def filter(sequence, object),                              do: [39, [sequence, object]]
+
+  def concat_map(sequence, function), do: [40, [sequence, func(function)]]
+  # TODO: order_by
+  def distinct(sequence), do: [42, [sequence]]
+
+  def count(sequence), do: [43, [sequence]]
+  def is_empty(sequence), do: [86, [sequence]]
+  def union(sequences), do: [44, [sequences]]
   
+  def nth(sequence, number), do: [45, [sequence, number]]
+  
+  def bracket(sequence, number) when is_integer(number), do: [170, [sequence, number]]
+  def bracket(sequence, string),                         do: [170, [sequence, string]]
+
+  def inner_join(sequence1, sequence2, function), do: [48, [sequence1, sequence2, func(function)]]
+  def outer_join(sequence1, sequence2, function), do: [48, [sequence1, sequence2, func(function)]]
+
+  # TODO: eq_join
+  def zip(sequence), do: [72, [sequence]]
+
+  def range(),                 do: [173]
+  def range(number),           do: [173, [number]]
+  def range(number1, number2), do: [173, [number1. number2]]
+
+  # Array Ops
+  def insert_at(array, number, datum),    do: [82, [array, number, datum]]
+  def delete_at(array, number),           do: [83, [array, number]]
+  def delete_at(array, number1, number2), do: [83, [array, number1, number2]]
+  def change_at(array, number, datum),    do: [84, [array, number, datum]]
+  def splice_at(array1, number, array2),  do: [85, [array1, number, array2]]
+
   # * Type Ops
   def coerce_to(top, string), do: [51, [top, string]]
   def type_of(top),           do: [52, [top]]
@@ -207,4 +245,8 @@ defmodule Rethink.R do
   def get_nearest(table, geometry),      do: [168, [table, geometry]]
   def polygon_sub(geometry1, geometry2), do: [171, [geometry1, geometry2]]      
 
-end
+
+  def run(query) do
+    Rethink.Connection.run(query)
+  end
+  end
