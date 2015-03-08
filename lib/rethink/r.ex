@@ -57,23 +57,26 @@ defmodule Rethink.R do
   def slice(sequence, number1, number2), do: [30, [sequence, number1, number2]]
   def skip(sequence, number),            do: [70, [sequence, number]]
   def limit(sequence, number),           do: [71, [sequence, number]]
-  def indexes_of(sequence, datum)      , do: [87, [sequence, datum]]
-  def contains(sequence, datum)        , do: [93, [sequence, datum]]
+  def indexes_of(sequence, datum),       do: [87, [sequence, datum]]
+  def contains(sequence, datum),         do: [93, [sequence, datum]]
 
   # Stream/Object Ops
-  def get_field(object, string),     do: [31, [make_array(object), string]]
-  def keys(object),                  do: [94, object]
+  def get_field(object, string), do: [31, [make_array(object), string]]
+  def keys(object),              do: [94, [object]]
 
+  # TODO: This part needs some testing.
   def has_fields(object, pathspec),  do: [32, [object, pathspec]]
   def with_fields(object, pathspec), do: [96, [object, pathspec]]
   def pluck(object, pathspec),       do: [33, [object, pathspec]]
   def without(object, pathspec),     do: [34, [object, pathspec]]
-  def merge(objects),                do: [35, make_array(objects)]
+  def merge(objects),                do: [35, [make_array(objects)]]
 
   # Sequence Ops
-  def between(selection, datum1, datum2), do: [36, [make_array(selection), datum1, datum2]]
-  def reduce(sequence, function),         do: [37, [make_array(sequence), func(function)]]
-  def map(sequence, function),            do: [38, [make_array(sequence), func(function)]]
+  # TODO: Needs some testing. Could need some make_array magic.
+  def between(selection, datum1, datum2),       do: [36, [selection, datum1, datum2]]
+  def between(selection, datum1, datum2, opts), do: [36, [selection, datum1, datum2], opts]
+  def reduce(sequence, function),         do: [37, [sequence, func(function)]]
+  def map(sequence, function),            do: [38, [sequence, func(function)]]
 
   def filter(sequence, function) when is_function(function), do: [39, [sequence, func(function)]]  
   def filter(sequence, object),                              do: [39, [sequence, object]]
@@ -126,26 +129,51 @@ defmodule Rethink.R do
   def db_drop(string),   do: [58, [string]]
   def db_list,           do: [59]
 
-  def table_create(string), do: [60, [string]]
-  def table_drop(string),   do: [61, [string]]
-  def table_list,           do: [62]
+  # TODO: Implement all variants of table_create
+  def table_create(database, string), do: [60, [database, string]]
+  def table_create(string),           do: [60, [string]]
+  def table_drop(database, string),   do: [61, [database, string]]
+  def table_drop(string),             do: [61, [string]]
+  def table_list(database),           do: [62, [database]]
+  def table_list(),                   do: [62]
+
+  def config(db_or_table), do: [174, [db_or_table]]
+  def status(table),       do: [175, [table]]
+  def wait(db_or_table),   do: [177, [db_or_table]]
+
+  def reconfigure(db_or_table, config), do: [176, [db_or_table, config]]
+  def rebalance(db_or_table),           do: [179, [db_or_table]]
+
+  def sync(table), do: [138, [table]]
 
   # * Secondary indexes OPs
   # TODO: check this {multi:BOOL} thingie
-  def index_create(table, string),           do: [75, [table, string]]
-  def index_create(table, string, function), do: [75, [table, string, function]]
-  def index_drop(table, string),             do: [76, [table, string]]
-  def index_list(table),                     do: [77, [table]]
+  def index_create(table, string, function) when is_function(function) do
+    [75, [table, string, func(function)]]
+  end
+  def index_create(table, string, function, opts) when is_function(function) do
+    [75, [table, string, func(function)], opts]
+  end
+  def index_create(table, string),       do: [75, [table, string]]
+  def index_create(table, string, opts), do: [75, [table, string], opts]
+  def index_drop(table, string),         do: [76, [table, string]]
+  def index_list(table),                 do: [77, [table]]
 
   def index_status(table, strings),          do: [139, [table, [make_array(strings)]]]
   def index_wait(table, strings),            do: [140, [table, [make_array(strings)]]]
   def index_rename(table, string1, string2), do: [156, [table, string1, string2]]
 
   # * Control Operators
-  #def funcall
-  #def branch
-  #def all
-  #def for_each
+  # TODO: Implement funcall (?)
+  
+  def branch(bool, top1, top2), do: [65, [bool, top1, top2]]
+  
+  def or(bools),         do: [66, [bools]]
+  def or(bool1, bool2),  do: [66, [bool1, bool2]]
+  def and(bools),        do: [67, [bools]]
+  def and(bool1, bool2), do: [67, [bool1, bool2]]
+
+  def for_each(sequence, function), do: [68, [sequence, func(function)]]
 
   def func(f) when is_function(f) do
     {_, arity} = :erlang.fun_info(f, :arity)
