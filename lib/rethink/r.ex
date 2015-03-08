@@ -82,8 +82,8 @@ defmodule Rethink.R do
   def filter(sequence, object),                              do: [39, [sequence, object]]
 
   def concat_map(sequence, function), do: [40, [sequence, func(function)]]
-  # TODO: order_by
-  def distinct(sequence), do: [42, [sequence]]
+  def order_by(sequence, ordering),   do: [41, [sequence, ordering]]
+  def distinct(sequence),             do: [42, [sequence]]
 
   def count(sequence), do: [43, [sequence]]
   def is_empty(sequence), do: [86, [sequence]]
@@ -184,8 +184,8 @@ defmodule Rethink.R do
     [69, [make_array(args), apply(f, vars)]]
   end
 
-  def asc,  do: [73]
-  def desc, do: [74]
+  def asc(string),  do: [73, [string]]
+  def desc(string), do: [74, [string]]
 
   def info(top),               do: [79, [top]]
   def match(string1, string2), do: [97, [string1, string2]]
